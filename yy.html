@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Juego de Carreras 2D</title>
+  <link rel="icon" href="/html/trabajos de jaure.html/imagenes/icon .jpg" type="image/png" />
+  <style>
+    body {
+  margin: 0;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('imagenes/11.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #998787;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+}
+
+canvas {
+  border: 2px solid #333;
+  background: linear-gradient(to bottom, white, black);
+}
+  .btn-regresar {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 20px;
+  background-color: #444;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-shadow: 0 0 5px #ccc;
+  transition: background-color 0.3s ease;
+}
+
+.btn-regresar:hover {
+  background-color: #e60000;
+}
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <a href="/html/trabajos de jaure.html/index.html" class="btn-regresar">🔙 Regresar al Menú</a>
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const WIDTH = canvas.width;
+const HEIGHT = canvas.height;
+
+const player = {
+  x: WIDTH / 2 - 25,
+  y: HEIGHT - 120,
+  width: 50,
+  height: 100,
+  speed: 5,
+  color: "#7FFFD4"
+};
+
+let obstacles = [];
+let keys = {};
+let score = 0;
+let level = 1;
+let gameOver = false;
+
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+function createObstacle() {
+  const size = 50;
+  const x = Math.random() * (WIDTH - size);
+  const speed = 3 + Math.random() * 3 + level;
+  obstacles.push({ x, y: -size, width: size, height: size, speed });
+}
+
+function drawPlayer() {
+  ctx.fillStyle = player.color;
+  ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+function drawObstacle(ob) {
+  ctx.fillStyle = "#FFB6C1";
+  ctx.fillRect(ob.x, ob.y, ob.width, ob.height);
+}
+
+function drawText(text, x, y, size = "20px") {
+  ctx.fillStyle = "black";
+  ctx.font = `${size} Arial`;
+  ctx.fillText(text, x, y);
+}
+
+function update() {
+  if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+  if (keys["ArrowRight"] && player.x + player.width < WIDTH) player.x += player.speed;
+
+  obstacles.forEach(ob => ob.y += ob.speed);
+
+  // Eliminar obstáculos fuera de pantalla
+  obstacles = obstacles.filter(ob => ob.y < HEIGHT);
+
+  // Colisiones
+  for (let ob of obstacles) {
+    if (
+      player.x < ob.x + ob.width &&
+      player.x + player.width > ob.x &&
+      player.y < ob.y + ob.height &&
+      player.y + player.height > ob.y
+    ) {
+      gameOver = true;
+    }
+  }
+
+  // Puntaje y nivel
+  score += 1;
+  if (score % 1000 === 0) {
+    level += 1;
+  }
+
+  // Agregar nuevos obstáculos
+  if (Math.random() < 0.03 + level * 0.005) createObstacle();
+}
+
+function drawBackground() {
+  const gradient = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+  gradient.addColorStop(0, "white");
+  gradient.addColorStop(1, "black");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+}
+
+function draw() {
+  drawBackground();
+  drawPlayer();
+  obstacles.forEach(drawObstacle);
+  drawText("Puntuación:${score}", 10, 30);
+  drawText(`Nivel: ${level}`, 10, 60);
+
+  if (gameOver) {
+    drawText("💥 ¡Choque! Presiona R para reiniciar", WIDTH / 2 - 200, HEIGHT / 2, "24px");
+  }
+}
+
+function gameLoop() {
+  if (!gameOver) update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener("keydown", e => {
+  if (gameOver && e.key.toLowerCase() === "r") {
+    // Reiniciar juego
+    obstacles = [];
+    score = 0;
+    level = 1;
+    gameOver = false;
+    player.x = WIDTH / 2 - 25;
+  }
+});
+
+gameLoop();
+  </script>
+</body>
+</html>

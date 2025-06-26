@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snake Game</title>
+  <link rel="icon" href="/html/trabajos de jaure.html/imagenes/icon .jpg .jpg" type="image/png" />
+  <style>
+    body {
+  margin: 0;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+canvas {
+  border: 2px solid #fff;
+  background-color: #111;
+}
+.btn-regresar {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 20px;
+  background-color: #444;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-shadow: 0 0 5px #ccc;
+  transition: background-color 0.3s ease;
+}
+
+.btn-regresar:hover {
+  background-color: #e60000;
+}
+  </style>
+</head>
+<body>
+    <a href="/html/trabajos de jaure.html/index.html" class="btn-regresar">🔙 Regresar al Menú</a>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = canvas.width;
+const HEIGHT = canvas.height;
+const gridSize = 20;
+
+let snake = [];
+let snakeDir = { x: -gridSize, y: 0 };
+let apple = {};
+let speed = 4;
+let running = true;
+let gameOver = false;
+let lastFrameTime = 0;
+
+function resetGame() {
+  const startX = Math.floor(WIDTH / 2 / gridSize) * gridSize;
+  const startY = Math.floor(HEIGHT / 2 / gridSize) * gridSize;
+
+  snake = [
+    { x: startX, y: startY },
+    { x: startX + gridSize, y: startY },
+    { x: startX + 2 * gridSize, y: startY }
+  ];
+  snakeDir = { x: -gridSize, y: 0 };
+  apple = randomApplePosition();
+  speed = 4;
+  running = true;
+  gameOver = false;
+}
+
+function randomApplePosition() {
+  return {
+    x: Math.floor(Math.random() * (WIDTH / gridSize)) * gridSize,
+    y: Math.floor(Math.random() * (HEIGHT / gridSize)) * gridSize
+  };
+}
+
+function update() {
+  const head = { x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y };
+  snake.unshift(head);
+
+  if (head.x === apple.x && head.y === apple.y) {
+    apple = randomApplePosition();
+    speed += 1;
+  } else {
+    snake.pop();
+  }
+
+  // Colisión con bordes
+  if (
+    head.x < 0 || head.x >= WIDTH ||
+    head.y < 0 || head.y >= HEIGHT ||
+    snake.slice(1).some(seg => seg.x === head.x && seg.y === head.y)
+  ) {
+    running = false;
+    gameOver = true;
+  }
+}
+
+function draw() {
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+  // Dibujar serpiente
+  snake.forEach((seg, i) => {
+    ctx.fillStyle = i === 0 ? 'yellow' : 'limegreen';
+    ctx.beginPath();
+    ctx.arc(seg.x + gridSize / 2, seg.y + gridSize / 2, gridSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Dibujar manzana
+  ctx.fillStyle = 'red';
+  ctx.beginPath();
+  ctx.arc(apple.x + gridSize / 2, apple.y + gridSize / 2, gridSize / 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Mensaje de Game Over
+  if (gameOver) {
+    ctx.fillStyle = 'white';
+    ctx.font = '40px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText("Game Over! Presiona 'R' para reiniciar", WIDTH / 2, HEIGHT / 2);
+  }
+}
+
+function gameLoop(timestamp) {
+  if (!lastFrameTime || timestamp - lastFrameTime > 1000 / speed) {
+    if (running) update();
+    draw();
+    lastFrameTime = timestamp;
+  }
+  requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener('keydown', e => {
+  const key = e.key;
+  if (gameOver && key.toLowerCase() === 'r') {
+    resetGame();
+    return;
+  }
+
+  if (!running) return;
+
+  const { x, y } = snakeDir;
+  if (key === 'ArrowLeft' && x === 0) snakeDir = { x: -gridSize, y: 0 };
+  if (key === 'ArrowRight' && x === 0) snakeDir = { x: gridSize, y: 0 };
+  if (key === 'ArrowUp' && y === 0) snakeDir = { x: 0, y: -gridSize };
+  if (key === 'ArrowDown' && y === 0) snakeDir = { x: 0, y: gridSize };
+});
+
+resetGame();
+requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>

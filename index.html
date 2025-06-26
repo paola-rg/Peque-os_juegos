@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Classic Games Collection</title>
+  <link rel="icon" href="/html/trabajos de jaure.html/imagenes/8.jpg" type="image/png" />
+  <link rel="stylesheet" href="/html/trabajos de jaure.html/style8.css" />
+</head>
+<body>
+  <header>
+    <h1>Break your head playing </h1>
+    <button id="toggle-sound">🔈 Activar Sonido</button>
+  </header>
+
+  <main>
+    <a href="/html/trabajos de jaure.html/Gato.html">
+      <section class="juego" style="background-image: url('imagenes/1.jpg');">⭕ Tres en Raya</section>
+    </a>
+    <a href="/html/trabajos de jaure.html/memorama.html">
+      <section class="juego" style="background-image: url('imagenes/9.jpeg');">🧠 Memorama 1</section>
+    </a>
+    <a href="/html/trabajos de jaure.html/memoramab.html">
+      <section class="juego" style="background-image: url('imagenes/2.jpg');">🧠 Memorama 2</section>
+    </a>
+    <a href="/html/trabajos de jaure.html/ajedrez.html">
+      <section class="juego" style="background-image: url('imagenes/3.jpg');">♛ Ajedrez</section>
+    </a>
+    <a href="/html/trabajos de jaure.html/ahorcado.html">
+      <section class="juego" style="background-image: url('imagenes/4.jpg');">🔤 Ahorcado</section>
+    </a>
+    <a href="/html/trabajos de jaure.html/scrabble.html">
+      <section class="juego" style="background-image: url('imagenes/5.jpg');">🧩 Scrabble</section>
+    </a>
+    <a href="/html/trabajos de jaure.html/buscaminas.html">
+      <section class="juego" style="background-image: url('imagenes/6.jpg');">💣 Buscaminas 1</section>
+    </a>
+    <a href="/html/trabajos de jaure.html/buscaminas2.html">
+      <section class="juego" style="background-image: url('imagenes/7.jpg');">💣 Buscaminas 2</section>
+    </a>
+    <a href="/html/trabajos de jaure.html/yy.html">
+      <section class="juego" style="background-image: url('imagenes/13.jpeg');">⏹️ Juego de Carreras 2D</section>
+    </a>
+    <a href="/html/trabajos de jaure.html/zz.html">
+      <section class="juego" style="background-image: url('imagenes/12.jpeg');">🐍 Snake Game</section>
+    </a>
+  </main>
+
+  <audio id="musica-fondo" src="/html/trabajos de jaure.html/sonidos/Audio de WhatsApp 2025-06-20 a las 16.41.29_daa11bbd.dat.unknown" loop></audio>
+  <canvas id="efecto-canvas"></canvas>
+
+  <script>
+    const musica = document.getElementById('musica-fondo');
+    const btnSonido = document.getElementById('toggle-sound');
+    let sonidoActivo = false;
+
+    btnSonido.addEventListener('click', () => {
+      if (!sonidoActivo) {
+        musica.play();
+        musica.muted = false;
+        btnSonido.textContent = "🔊 Silenciar";
+      } else {
+        musica.pause();
+        btnSonido.textContent = "🔈 Activar Sonido";
+      }
+      sonidoActivo = !sonidoActivo;
+    });
+
+    // Flores
+    const canvas = document.getElementById('efecto-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    function ajustarTamano() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    ajustarTamano();
+    window.addEventListener('resize', ajustarTamano);
+
+    class Flor {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = 10 + Math.random() * 10;
+        this.speed = 1 + Math.random() * 2;
+        this.angle = Math.random() * 2 * Math.PI;
+        this.angularSpeed = 0.01 + Math.random() * 0.02;
+      }
+
+      update() {
+        this.y += this.speed;
+        this.x += Math.sin(this.angle) * 1.5;
+        this.angle += this.angularSpeed;
+
+        if (this.y > height) {
+          this.y = -this.size;
+          this.x = Math.random() * width;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        ctx.fillStyle = 'gray';
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          ctx.lineTo(0, this.size);
+          ctx.translate(0, this.size);
+          ctx.rotate((Math.PI * 2) / 10);
+          ctx.lineTo(0, -this.size);
+          ctx.translate(0, -this.size);
+          ctx.rotate(-(Math.PI * 6) / 10);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const flores = [];
+    for (let i = 0; i < 40; i++) {
+      flores.push(new Flor());
+    }
+
+    function animar() {
+      ctx.clearRect(0, 0, width, height);
+      flores.forEach(flor => {
+        flor.update();
+        flor.draw();
+      });
+      requestAnimationFrame(animar);
+    }
+    animar();
+  </script>
+</body>
+</html>

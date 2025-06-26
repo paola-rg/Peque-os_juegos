@@ -1,0 +1,69 @@
+     body {
+       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('imagenes/11.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #998787;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    #tablero {
+      display: grid;
+      grid-template-columns: repeat(8, 40px);
+      gap: 2px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+
+    .celda {
+      width: 40px;
+      height: 40px;
+      background-color: #bbb;
+      border: 1px solid #888;
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 40px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .revelada {
+      background-color: #ddd;
+      cursor: default;
+    }
+
+    .mina {
+      background-color: red;
+    }
+
+    #reiniciar {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+      .btn-regresar {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 20px;
+  background-color: #444;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-shadow: 0 0 5px #ccc;
+  transition: background-color 0.3s ease;
+}
+
+.btn-regresar:hover {
+  background-color: #e60000;
+}
